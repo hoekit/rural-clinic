@@ -1,4 +1,4 @@
-// src/index.js v0.0.1-1
+// src/index.js v0.0.2-2
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -6,5 +6,10 @@
  */
 
 var m = require("mithril")
+var vLogin    = require('./views/vLogin')
 
-m.render(document.body, "hello mitriljs appsrc backed up to GitHub.")
+var base = document.getElementById('base')
+m.route(base, '/login', {
+    '/login'    : vLogin,
+})
+

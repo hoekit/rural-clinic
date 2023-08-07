@@ -1,7 +1,7 @@
 # Clinic - Keeping patient records for a small clinic
 
 ## Contents<a id="toc"></a>
-\[
+[
 1. Context
 2. Scenarios and Specifications
 3. Data Design
@@ -13,6 +13,11 @@
 9. Problem: Public seems over exposed
 10. Problem: If laptop dies, project is gone
 11. VERSION 0.0.1
+12. Problem: Perl on Windows
+13. Problem: Add a login page
+14. Problem: Versioning the source files
+15. Problem: Styling page elements
+16. Problem: Starting at the login page
 ]
 
 ## Details
@@ -248,6 +253,8 @@ __ versions
 
 - mithril: 2.2.2
 
+- tachyons: [4.12.0](https://raw.githubusercontent.com/tachyons-css/tachyons/master/css/tachyons.min.css)
+
 ..
 
 ----
@@ -312,6 +319,107 @@ This version all the major components setup. The front-end using
 MithrilJS and webpack for bunding and the backend using Perl and
 Mojolicious. With this setup, we'll just keep iterating, changing bits
 and pieces here and there until we have what we need.
+
+..
+
+----
+<a id="12"></a>
+## 12. Problem: Perl on Windows
+__
+
+The version of perl on the development Linux machine is 5.34.0 while the
+[latest version](https://www.perl.org/get.html) is at 5.38.0.
+
+[Strawberry Perl](https://strawberryperl.com/) is the preferred version
+of Perl on Windows is at v5.32.1.
+
+To make sure that things will work on Windows, as in the dev machine,
+Perl 5.32.1 will be installed in the dev machine.
+
+Source for 5.32.1:
+
+    https://www.cpan.org/src/5.0/perl-5.32.1.tar.gz
+
+..
+
+----
+<a id="13"></a>
+## 13. Problem: Add a login page
+__
+
+This system probably don't need a login page as it's likely used only by
+one person. But better to include it up front. We can always bypass it
+later on.
+
+All views are defined in folder src/views so this will be
+src/views/vLogin.js
+
+..
+
+----
+<a id="14"></a>
+## 14. Problem: Versioning the source files
+__
+
+The app has one version e.g. the version at the moment is v0.0.1. But an
+app is actually made up of different files, which may change
+independently. So how is it possible to track both?
+
+One solution, used in this project is to use X.Y.Z-n scheme where the
+X.Y.Z is the usual major, minor, patch of the app. The value of *n* is
+at the file level, it is incremented on every commit; independently of
+the app version. And the X.Y.Z value used is the next version of the
+app - not the current value.
+
+As an example. The current app/project version is 0.0.1 and the next
+version is 0.0.2. Starting a new file now e.g. src/views/vLogin.js will
+have a version v0.0.2-1.
+
+..
+
+----
+<a id="15"></a>
+## 15. Problem: Styling page elements
+__
+
+Using basic HTML elements is a little too plan. To spruce things up a
+little, [Tachyons](https://tachyons.io/) is used for simple styling.
+
+..
+
+----
+<a id="16"></a>
+## 16. Problem: Starting at the login page
+__
+
+The MithrilJS way is to specify the first page in m.route():
+
+    var base = document.getElementById('base')
+    m.route(base, '/login', {
+        '/login'    : vLogin,
+    })
+
+Element *base* is simply a div in index.html:
+
+    <body>
+      ...
+      <div id="base"></div>
+      ...
+    </body>
+
+And earlier, *vLogin* is the module exported by views/vLogin.js:
+
+    var vLogin    = require('./views/vLogin')
+
+The entire src/index.js file at the moment is:
+
+    var m = require("mithril")
+    var vLogin    = require('./views/vLogin')
+
+    var base = document.getElementById('base')
+    m.route(base, '/login', {
+        '/login'    : vLogin,
+    })
 
 ..
 
