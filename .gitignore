@@ -1,0 +1,6 @@
+# Skip log files
+log
+
+# Skip node_modules
+public/node_modules
+appsrc/node_modules
