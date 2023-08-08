@@ -1,12 +1,12 @@
 {
   "name": "clinic",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Tiny Clinic System",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack ./src/index.js --output-path ../public/dist --mode=development --watch",
-    "build": "webpack ./src/index.js --output-path ../public/dist --mode=production"
+    "start": "webpack ./index.js --output-path ../public/dist --mode=development --watch",
+    "build": "webpack ./index.js --output-path ../public/dist --mode=production"
   },
   "keywords": [],
   "author": "",

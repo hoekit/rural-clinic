@@ -20,6 +20,7 @@
 16. Problem: Starting at the login page
 17. Problem: On startup, prompt is at username input
 18. Problem: Need strings to be in another language
+19. Problem: Directory structure is unnecessarily deep
 ]
 
 ## Details
@@ -496,6 +497,45 @@ The desired system is something where we can specify the language:
 
     var S = mLang.useLang('en')         // Change to use English
     S('login')          // Login
+
+..
+
+----
+<a id="19"></a>
+## 19. Problem: Directory structure is unnecessarily deep
+__
+
+At the moment, source for the app is structured like so:
+
+    appsrc/
+      src/
+        index.js
+        models/
+        views/
+
+The src/ folder seems unnecessary. After all the parent directory is
+already called 'appsrc/'. Getting rid of 'src/' seems cleaner:
+
+    appsrc/
+      index.js
+      models/
+      views/
+
+Let's fix it:
+
+    cd appsrc
+    git mv src/index.js .
+    git mv src/models .
+    git mv src/views .
+
+Need to update the package.json:
+
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "webpack ./index.js --output-path ../public/dist --mode=development --watch",
+        "build": "webpack ./index.js --output-path ../public/dist --mode=production"
+    },
+
 
 ..
 
