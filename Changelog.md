@@ -18,6 +18,8 @@
 14. Problem: Versioning the source files
 15. Problem: Styling page elements
 16. Problem: Starting at the login page
+17. Problem: On startup, prompt is at username input
+18. Problem: Need strings to be in another language
 ]
 
 ## Details
@@ -454,6 +456,46 @@ The entire src/index.js file at the moment is:
     m.route(base, '/login', {
         '/login'    : vLogin,
     })
+
+..
+
+----
+<a id="17"></a>
+## 17. Problem: On startup, prompt is at username input
+__
+
+If the prompt is at the username input element, user can start typing
+straight away.
+
+The jargon for it is to automatically *focus* on the username input.
+
+Solution is to set the autofocus attribute:
+
+    https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus
+
+..
+
+----
+<a id="18"></a>
+## 18. Problem: Need strings to be in another language
+__
+
+The UI needs to be in Thai e.g.:
+
+    Login       เข้าสู่ระบบ
+    Username    ชื่อผู้ใช้
+    Password    รหัสผ่าน
+
+The desired system is something where we can specify the language:
+
+    var mLang = require('../models/mLanguage')
+
+    var S = mLang.useLang('th')
+    S('login')          // เข้าสู่ระบบ
+    S('username')       // ชื่อผู้ใช้
+
+    var S = mLang.useLang('en')         // Change to use English
+    S('login')          // Login
 
 ..
 
