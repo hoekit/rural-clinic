@@ -345,14 +345,48 @@ Source for 5.32.1:
 ----
 <a id="13"></a>
 ## 13. Problem: Add a login page
-__
+__ src/views/vLogin.js
 
 This system probably don't need a login page as it's likely used only by
 one person. But better to include it up front. We can always bypass it
 later on.
 
-All views are defined in folder src/views so this will be
-src/views/vLogin.js
+All views are defined in folder src/views so this will be:
+
+    src/views/vLogin.js
+
+Everything is stored in an object called vLogin.
+
+    vLogin.view
+        - Returns a mithril m() object that's rendered.
+        - View has input for username and password and a Login button.
+
+    vLogin.login
+        - Function to handle login
+        - Calls mUser.login() which actually does the login
+        - On success, go to the main page
+        - On error, display the error
+
+..
+__ src/views/vHelper.js
+
+Contains various helpers for views and elements e.g.
+
+    vHelper.setById = nodeId => {
+        // Returns a function that takes a msg and renders it at given node
+        return msg => {
+            var node = document.getElementById(nodeId);
+            m.render(node, m('div.mt2.dark-blue.tl',msg))
+        }
+    }
+
+..
+__ src/models/mUser.js
+
+This encapsulates the user object and at the moment has:
+
+    mUser.login
+        - Checks if user is authorized to login
 
 ..
 
