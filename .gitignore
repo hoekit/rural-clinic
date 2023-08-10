@@ -4,3 +4,6 @@ log
 # Skip node_modules
 public/node_modules
 appsrc/node_modules
+
+# Skip folder that has some confidential info
+private

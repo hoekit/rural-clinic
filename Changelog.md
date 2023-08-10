@@ -21,6 +21,11 @@
 17. Problem: On startup, prompt is at username input
 18. Problem: Need strings to be in another language
 19. Problem: Directory structure is unnecessarily deep
+20. Problem: Add the patient list page
+21. Problem: Need to mockup list of patient data
+22. Problem: How to generate incremental HN number
+23. Problem: Mithril is not auto-redrawing
+24: Problem: Align images to the right of space
 ]
 
 ## Details
@@ -536,6 +541,332 @@ Need to update the package.json:
         "build": "webpack ./index.js --output-path ../public/dist --mode=production"
     },
 
+
+..
+
+----
+<a id="20"></a>
+## 20. Problem: Add the patient list page
+__
+
+Patient List Specifications:
+
+    - Has a simple header
+        - Has button to add new patient
+            - onclick, go to Add Patient page
+            - https://www.iconarchive.com/search?q=iconoir+add
+            - https://www.iconarchive.com/show/iconoir-icons-by-iconoir-team/add-user-icon.html
+    - Has a search input
+        - onload, focus on input
+    - Has a list of patients
+
+Each Patient is shown in a card as follows:
+    - Show Patient details
+    - Show delete button
+        - onclick, Delete Patient from list
+        - https://www.iconarchive.com/search?q=iconoir+delete
+        - https://www.iconarchive.com/show/iconoir-icons-by-iconoir-team/delete-circle-icon.html
+    - Show edit button
+        - onclick, go to Edit Patient page
+        - https://www.iconarchive.com/search?q=iconoir+edit
+        - https://www.iconarchive.com/show/iconoir-icons-by-iconoir-team/page-edit-icon.html
+
+Patient Details:
+    - Patient name
+    - Gender, Age
+    - Congenital Disease
+    - Allergy
+    - Blood Group
+    - Patient last visit date (maybe)
+    - Anything else that may be useful
+
+..
+
+----
+<a id="21"></a>
+## 21. Problem: Need to mockup list of patient data
+__ Patient List
+
+A list of patient data is obviously a list of zero or more patient
+objects.
+
+Zero, one or N patients:
+
+    []
+    [ patient_1 ]
+    [ patient_1, patient_2, patient_3, ..., patient_N ]
+
+..
+__ Patient Object:
+
+    {
+      hn*                   integer >= 1001
+      firstName*            text
+      lastName*             text
+      dob                   text  (format:YYYYMMDD, value:Common Era)
+      age*                  computed text
+      gender*               text
+      race                  text
+      nationality           text
+      id                    text
+      addrNum               text
+      addrMoo               text
+      addrTambon            text
+      addrAmphur            text
+      addrProvince          text
+      addrPostcode          text
+      phoneNum              text
+      kinName               text
+      kinRelation           text
+      kinPhoneNum           text
+      disease*              text
+      allergy*              text
+      bloodGroup*           text
+      extra1                text
+      extra2                text
+      extra3                text
+      extra4                text
+      extra5                text
+    }
+
+..
+__ Patient Object Notes:
+
+    - hn
+        - used instead of patient number
+        - starts from 1001. may use 000-999 for special cases
+    - dob
+        - Stored in CE (Common Era) format
+        - Accepts CE year values when Env.language is EN
+        - Accepts BE (Buddhist Era) year values when Env.language is TH
+        - UI will show example values to disabiguate
+    - addr*
+        - expect one address for each patient
+
+..
+__ Storing Patient Object
+
+For programming and debugging convenience, the patient object should be
+displayed to include all the field names. However, for storage and
+network transmission purposes, it's best not to store the field names.
+
+Use mPatientList.js for to managing patient lists.
+
+Use mPatient.js for managing patients.
+
+    mPatient.fromList([...])
+        - Creates a new patient object from a list of values
+    mPatient.obj()
+        - Returns the patient object as a simple JS object {...}
+    mPatient.list()
+        - Returns the patient object as a simple JS list [...]
+    mPatient.miniView()
+        - Renders a patient object showing minimal details
+    mPatient.fullView()
+        - Renders a patient object showing full details
+
+..
+__ Sample Patient List
+
+[
+    {
+        hn                  : 1001,
+        firstName           : "First Name 1001",
+        lastName            : "Last Name 1001",
+        dob                 : "2000-01-01",
+        age                 : "23y 249d"
+        gender              : "Male",
+        race                : "Thai",
+        nationality         : "Thai",
+        id                  : "1234567890ABC",
+        addrNum             : "100",
+        addrMoo             : "2",
+        addrTambon          : "Tambon 1001",
+        addrAmphur          : "Amphur 1001",
+        addrProvince        : "Province 1001",
+        addrPostcode        : "00000",
+        phoneNum            : "0123456789",
+        kinName             : "Kin Name 1001",
+        kinRelation         : "Kin Relation 1001",
+        kinPhoneNum         : "0123456789",
+        disease*            : "-",
+        allergy*            : "-",
+        bloodGroup*         : null,
+
+        extra1              : null,
+        extra2              : null,
+        extra3              : null,
+        extra4              : null,
+        extra5              : null,
+    },
+    {
+        hn                  : 1002,
+        firstName           : "First Name 1002",
+        lastName            : "Last Name 1002",
+        dob                 : "2000-01-01",
+        age                 : "23y 249d"
+        gender              : "Male",
+        race                : "Thai",
+        nationality         : "Thai",
+        id                  : "1234567890ABC",
+        addrNum             : "100",
+        addrMoo             : "2",
+        addrTambon          : "Tambon 1002",
+        addrAmphur          : "Amphur 1002",
+        addrProvince        : "Province 1002",
+        addrPostcode        : "00000",
+        phoneNum            : "0123456789",
+        kinName             : "Kin Name 1002",
+        kinRelation         : "Kin Relation 1002",
+        kinPhoneNum         : "0123456789",
+        disease*            : "-",
+        allergy*            : "-",
+        bloodGroup*         : null,
+
+        extra1              : null,
+        extra2              : null,
+        extra3              : null,
+        extra4              : null,
+        extra5              : null,
+    }
+]
+
+..
+
+----
+<a id="22"></a>
+## 22. Problem: How to generate incremental HN number
+__ Usage
+
+To get an incremental HN number, it should be as simple as:
+
+    var mNext = require('../models/mNext')
+    var nextHn = mNext.next('hn')
+
+..
+__ Implementation
+
+Assume there exist an SQLite table called Next:
+
+    CREATE TABLE Next(
+        key     TEXT    PRIMARY KEY,
+        value   TEXT
+    );
+
+With initial values:
+
+    INSERT INTO Next VALUES ("hn", 1000);
+
+The mNext.next(key) function can be implemented as an SQLite query:
+
+    UPDATE Next
+        SET value = (SELECT value+1 FROM Next WHERE key = "hn")
+        WHERE key = "hn";
+
+    SELECT * FROM Next;     -- Check after
+
+..
+__ In Perl
+
+    use DBI;
+
+    my $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile","","");
+
+    # Increment HN
+    $dbh->do(q{
+        UPDATE Next
+            SET value = (SELECT value+1 FROM Next WHERE key = "hn")
+            WHERE key = "hn";
+    });
+
+    # Retrieve value of HN
+    my $sth = $dbh->prepare(q{SELECT value FROM Next where key = "hn"});
+    $sth->execute;
+    my $res = $sth->fetch;
+
+..
+__ In case of multiple users (not for this system)
+
+The below is obviously not going to be needed for a single-user system.
+
+Wrapping everything in a transaction would probably work. It makes
+the increment-and-read atomic.
+
+    use DBI;
+
+    my $dbfile = '/tmp/env.db';
+    my $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile","","");
+
+    $dbh->do(q{BEGIN TRANSACTION;});
+
+    # Increment HN
+    my $upd_sth = $dbh->prepare(q{
+        UPDATE Next
+            SET value = (SELECT value+1 FROM Next WHERE key = "hn")
+            WHERE key = "hn";
+        });
+
+    $upd_sth->execute;
+
+    # Check for failures here
+    # On Linux, the update statement will block if another transaction
+    # was being executed.
+
+    # Retrieve value of HN
+    my $sth = $dbh->prepare(q{SELECT value FROM Next where key = "hn"});
+    $sth->execute;
+    my $res = $sth->fetch;
+
+    $dbh->do(q{COMMIT});
+
+..
+
+----
+<a id="23"></a>
+## 23. Problem: Mithril is not auto-redrawing
+__
+
+The design of Patient List page is that it'll retrieve the patient list
+which returns a Promise. And when the Promise is resolved, patient list
+data then becomes available.
+
+However, the view function runs before the Promise is resolved. And it
+does not auto-redraw after the patient list is available.
+
+For situations such as this, Mithril provides the
+[m.redraw()](https://mithril.js.org/redraw.html) function.
+
+..
+
+----
+<a id=""></a>
+## 24: Problem: Align images to the right of space
+__
+
+The edit and delete icons should align right. But these are images So
+how do solve this problem?
+
+Make the container a flexbox:
+
+    m('div.flex.mt2.mb0',[
+
+Both items are styled with *display:block* and in addition, the first
+image is styled with *margin-left:auto*:
+
+        m('img.db.ml-auto.w-1em.pa1.f4', {
+            src:'/img/patient-edit.png',
+            onclick: () => console.log('Edit Patient')
+        }),
+        m('img.db.w-1em.pa1.f4', {
+            src:'/img/patient-delete.png',
+            onclick: () => console.log('Delete Patient')
+        }),
+
+Tachyons CSS is used so:
+
+    .flex       display:flex
+    .db         display:block
+    .ml-auto    margin-left:auto
 
 ..
 

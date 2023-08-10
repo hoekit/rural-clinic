@@ -1,4 +1,4 @@
-// src/models/mLanguage v0.0.2-1
+// src/models/mLanguage v0.0.2-2
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,23 +13,34 @@ mLang.useLang = lang => mLang.s[lang]
 
 // EN strings
 mLang.s.en = key => {
-    return {
+    var res = {
+        age         : 'Age',
+        bloodGroup  : 'Blood Group',
+        gender      : 'Gender',
+        hn          : 'HN',
         login       : 'Login',
-        username    : 'Username',
         password    : 'Password',
         pleaseWait  : 'Please wait',
-    }[key]
+        search      : 'Search',
+        username    : 'Username',
+    }
+    return res[key] || key
 }
 
 // TH strings
 mLang.s.th = key => {
-    var key2string = {
+    var res = {
+        age         : 'อายุ',
+        bloodGroup  : 'หมู่เลือด',
+        gender      : 'เพศ',
+        hn          : 'HN',
         login       : 'เข้าสู่ระบบ',
-        username    : 'ชื่อผู้ใช้',
         password    : 'รหัสผ่าน',
         pleaseWait  : 'โปรดรอสักครู่',
+        search      : 'ค้นหา',
+        username    : 'ชื่อผู้ใช้',
     }
-    return key2string[key]
+    return res[key] || key
 }
 
 module.exports = mLang
