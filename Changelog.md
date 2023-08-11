@@ -26,6 +26,11 @@
 22. Problem: How to generate incremental HN number
 23. Problem: Mithril is not auto-redrawing
 24: Problem: Align images to the right of space
+25: Problem: Replace mock data in JS with mock data from Server
+26: Problem: Design the API
+27: Problem: Confusion between DOB and age
+28: Problem: Find difference between two dates
+29: Problem: Display date in CE and BE formats
 ]
 
 ## Details
@@ -867,6 +872,110 @@ Tachyons CSS is used so:
     .flex       display:flex
     .db         display:block
     .ml-auto    margin-left:auto
+
+..
+
+----
+<a id=""></a>
+## 25: Problem: Replace mock data in JS with mock data from Server
+__
+
+At the moment, data is mocked in the JS app. Let's fetch it from the
+server instead.
+
+The API endpoint is:
+
+    GET /patients
+
+..
+
+----
+<a id=""></a>
+## 26: Problem: Design the API
+__ Patients
+
+    GET /patients
+        - Fetch list of all patients, partial attributes
+
+    POST /patients
+        - Adds/Creates a new patient
+
+    GET /patient/:hn
+        - Fetch all attributes of patient :hn
+
+    POST /patient/:hn
+        - Updates records of patient :hn
+
+..
+__ Visits
+
+    GET /visits/:hn
+        - Fetch list of visits of :hn, partial attributes
+
+    POST /visits/:hn
+        - Adds/Creates a new visit for patient :hn
+
+    GET /visit/:hn/:visitNum
+        - Fetch all attributes of visit :visitNum of patient :hn
+
+    POST /visit/:hn/:visitNum
+        - Updates attributes of visit :visitNum of patient :hn
+
+..
+
+----
+<a id="27"></a>
+## 27. Problem: Confusion between DOB and age
+__
+
+The date of birth (DOB) of a patient is a static value while the age of
+a patient keeps changing depending when the record is viewed. So age is
+a function of DOB and only makes sense in the presentation layer.
+
+Therefore the server and the underlying database only knows about values
+like DOB but not dynamic values like age.
+
+..
+
+----
+<a id=""></a>
+## 28: Problem: Find difference between two dates
+__
+
+According to
+[MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date)
+Javascript can parse dates in the YYYY-MM-DD string format.
+
+    const dt1 = new Date('2000-01-01')
+    const now = new Date()
+    const msSinceEpoch = new Date(now - dt1)
+    const msPerYear = 365 * 24 * 60 * 60 * 1000
+    const years = msSinceEpoch / msPerYear
+    const yearsInt = Math.floor(years)
+    const daysInt  = Math.floor((years - yearsInt) * 365)
+
+
+
+..
+
+----
+<a id=""></a>
+## 29: Problem: Display date in CE and BE formats
+__
+
+A date such as 2012-12-02 in Common Era (CE) format:
+
+    2 Dec 2012
+
+In Buddhist Era (BE) format:
+
+    2 ธ.ค. 2555
+
+According to [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleDateString) the solution is:
+
+    const event = new Date(Date.UTC(2012, 11, 2, 3, 0, 0));
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    console.log(event.toLocaleDateString('th-TH', options));
 
 ..
 

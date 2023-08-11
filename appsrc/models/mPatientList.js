@@ -1,9 +1,11 @@
-// src/models/mPatientList.js v0.0.2-1
+// src/models/mPatientList.js v0.0.2-2
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
+var m = require("mithril")
 
 var mPatientList = {}
 
@@ -17,8 +19,60 @@ mPatientList.load = () => {
     //   resolves to a list of patients, or
     //   rejects with an error
 
-    mPatientList.data = mPatientList._mock('patientsInPart')
-    return Promise.resolve(mPatientList.data)
+    return m.request({
+        method: 'GET',
+        url   : '/patients'
+    })
+    .then(res => {
+        // res is a simply a list: [ reqStatus, reqData ]
+
+        // reqStatus is One of: ok|nok
+        const reqStatus = res[0]
+
+        // reqData is a list of patient attribute values
+        //   [ patientAttrValues_01, patientAttrValues_02, ... ]
+        // patientAttrValues is a list of patient attribute values
+        //   [ 1001,                    // hn
+        //     'First Name 1001',       // firstName
+        //     ...
+        //   ]
+        const reqData = res[1]
+
+        // If status is ok, convert each record into an object
+        if (reqStatus === 'ok') {
+
+            // Sequence of fields in the patient data.
+            // This sequence should be the same sequence as that in the
+            // backend else there will be problems.
+            const fields = [
+                'hn'        , 'firstName'   , 'lastName',
+                'dob'       , 'gender'      ,
+                'disease'   , 'allergy'     , 'bloodGroup'
+            ]
+
+            // Create patientList from reqData
+            const patientList = reqData.map(patientAttr => {
+                var patientObj = {}
+
+                // Add key and values to patientObj
+                fields.map((key,idx) => {
+                    patientObj[key] = patientAttr[idx]
+                })
+                return patientObj
+            })
+
+            mPatientList.data = patientList
+            return mPatientList.data
+
+        } else {
+            // TODO: Case request succeeded but reqStatus is not ok
+            return Promise.reject(mPatientList.data)
+        }
+    })
+    .catch(err=> {
+        // TODO: Case request did not complete successfully
+        return Promise.reject(err)
+    })
 }
 mPatientList._mock = key => {
     // List of Patients with full set of attributes
@@ -57,7 +111,7 @@ mPatientList._mock = key => {
             hn                  : 1002,
             firstName           : "First Name 1002",
             lastName            : "Last Name 1002",
-            dob                 : "2000-01-01",
+            dob                 : "2001-12-31",
             age                 : "23y 249d",
             gender              : "หญิง",
             race                : "Thai",
@@ -91,10 +145,11 @@ mPatientList._mock = key => {
         // List of attributes in partial patient object
         var partialFields = [
             'hn'        , 'firstName'   , 'lastName',
-            'age'       , 'gender'      ,
+            'dob'       , 'gender'      ,
             'disease'   , 'allergy'     , 'bloodGroup'
         ]
 
+        // Skeleton struct for a partial patient record
         var aPartialPatient = {}
 
         // Copy values of each field from 

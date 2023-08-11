@@ -1,4 +1,4 @@
-# Main.pl
+# Main.pl v0.0.2-2
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -29,6 +29,46 @@ my $SP = {
 ######################################################################
 
 get '/' => sub { shift->redirect_to('/index.html') };
+
+get '/patients' => sub {
+    my $c = shift;
+
+    # Sequence of fields in the patient data.
+    # This sequence should be the same sequence as that in the frontend
+    # else there will be problems.
+    my $fields = [qw/hn firstName lastName dob gender disease allergy
+        bloodGroup/];
+
+    my $mock_1001 = [
+        1001,                   # hn
+        "First Name 1001",      # firstName
+        "Last Name 1001",       # lastName
+        "2000-01-01",           # dob
+        "ชาย",                  # gender
+        "-",                    # disease
+        "-",                    # allergy
+        undef,                  # bloodGroup
+    ];
+
+    my $mock_1002 = [
+        1002,                   # hn
+        "First Name 1002",      # firstName
+        "Last Name 1002",       # lastName
+        "2000-01-01",           # dob
+        "หญิง",                  # gender
+        "-",                    # disease
+        "-",                    # allergy
+        undef,                  # bloodGroup
+    ];
+
+    my $data = [ $mock_1001, $mock_1002 ];
+
+    $c->res->headers->header("Access-Control-Allow-Origin" => "*");
+    return $c->render(json => [
+        'ok',
+        $data || [],
+    ]);
+};
 
 ######################################################################
 # Helpers
