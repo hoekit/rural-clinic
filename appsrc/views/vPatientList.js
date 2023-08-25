@@ -1,4 +1,4 @@
-// src/views/vPatientList.js v0.0.2-2
+// src/views/vPatientList.js v0.0.2-3
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -58,7 +58,7 @@ vPatientList.view = () => {
             ]),
             m('div.flex.mt2.mb2',[
                 keyVal('disease',patient.disease),
-                keyVal('allergy',patient.allergy100),
+                keyVal('allergy',patient.allergy),
             ]),
             m('div.flex.mt2.mb0',[
                 keyVal('bloodGroup',patient.bloodGroup,25),
@@ -78,7 +78,26 @@ vPatientList.view = () => {
     return m('div.ma3',[
 
         // Header
-        m('h1.tc','Patient List'),
+        m('div.flex.mt2.mb2.pa0',[
+            m('div.center.f2.tracked.tc','Patient List'),
+            m('img.mt-auto.mw2-5.h-fit', {
+                src:'/img/patient-add.png',
+                onclick: () => m.route.set('/patientAdd')
+            })
+        ]),
+
+        // Header
+        /*
+        m('div.flex.mt3.mb2.pa0',[
+            m('div.w-90.pr2.pl2',[
+                m('div.f2.tc.ttu.tracked','Patient List')
+            ]),
+            m('img.w-10.mt-auto.mw2-5.h-fit', {
+                src:'/img/patient-add.png',
+                onclick: () => console.log('Add Patient')
+            })
+        ]),
+        */
 
         // Search
         m('input[type=text][autofocus].mt1.w-100', {

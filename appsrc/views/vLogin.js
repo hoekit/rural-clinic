@@ -1,4 +1,4 @@
-// src/views/vLogin.js v0.0.2-2
+// src/views/vLogin.js v0.0.2-3
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -35,9 +35,16 @@ vLogin.login = () => {
     })
 }
 vLogin.view = () => {
-    return m('div.tc',
+    return m('div.ma3.tc',
+
+        // Header
+        m('div.flex.mt2.mb2.pa0',[
+            m('div.center.f2.tracked.tc',
+                'Clinic #' + Env.ClinicNum + ' ' + S('login'))
+        ]),
+
+
         m('form.dib.ma3',[
-            m('h1','Clinic #' + Env.ClinicNum + ' ' + S('login')),
             m('label.db.mt2.f6.gray.tl',S('username')),
             m("input[type=text][autofocus].db.mt1.w-100", {
                 oninput: e => {vLogin.user = e.target.value},

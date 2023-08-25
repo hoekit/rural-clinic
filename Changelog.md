@@ -25,12 +25,23 @@
 21. Problem: Need to mockup list of patient data
 22. Problem: How to generate incremental HN number
 23. Problem: Mithril is not auto-redrawing
-24: Problem: Align images to the right of space
-25: Problem: Replace mock data in JS with mock data from Server
-26: Problem: Design the API
-27: Problem: Confusion between DOB and age
-28: Problem: Find difference between two dates
-29: Problem: Display date in CE and BE formats
+24. Problem: Align images to the right of space
+25. Problem: Replace mock data in JS with mock data from Server
+26. Design: The API
+27. Problem: Confusion between DOB and age
+28. Problem: Find difference between two dates
+29. Problem: Display date in CE and BE formats
+30. Problem: Restarting the project after a hiatus
+31. Problem: Implement adding a new patient - DOING
+32. Coding: Naming conventions
+33. Design: Data Structures
+34. Design: Frontend Page
+35. Design: SQLite tables
+36. Problem: How to layout page title with icons
+37. Problem: How to remove inner shadow of text input
+38. Problem: How to use regex to check date format?
+39. Problem: How to extract year from YYYY-MM-DD
+40. Problem: How to get current year
 ]
 
 ## Details
@@ -338,7 +349,7 @@ and pieces here and there until we have what we need.
 ----
 <a id="12"></a>
 ## 12. Problem: Perl on Windows
-__
+__ Perl on Windows is at v5.32.1
 
 The version of perl on the development Linux machine is 5.34.0 while the
 [latest version](https://www.perl.org/get.html) is at 5.38.0.
@@ -844,8 +855,8 @@ For situations such as this, Mithril provides the
 ..
 
 ----
-<a id=""></a>
-## 24: Problem: Align images to the right of space
+<a id="24"></a>
+## 24. Problem: Align images to the right of space
 __
 
 The edit and delete icons should align right. But these are images So
@@ -876,8 +887,8 @@ Tachyons CSS is used so:
 ..
 
 ----
-<a id=""></a>
-## 25: Problem: Replace mock data in JS with mock data from Server
+<a id="25"></a>
+## 25. Problem: Replace mock data in JS with mock data from Server
 __
 
 At the moment, data is mocked in the JS app. Let's fetch it from the
@@ -890,37 +901,9 @@ The API endpoint is:
 ..
 
 ----
-<a id=""></a>
-## 26: Problem: Design the API
-__ Patients
-
-    GET /patients
-        - Fetch list of all patients, partial attributes
-
-    POST /patients
-        - Adds/Creates a new patient
-
-    GET /patient/:hn
-        - Fetch all attributes of patient :hn
-
-    POST /patient/:hn
-        - Updates records of patient :hn
-
-..
-__ Visits
-
-    GET /visits/:hn
-        - Fetch list of visits of :hn, partial attributes
-
-    POST /visits/:hn
-        - Adds/Creates a new visit for patient :hn
-
-    GET /visit/:hn/:visitNum
-        - Fetch all attributes of visit :visitNum of patient :hn
-
-    POST /visit/:hn/:visitNum
-        - Updates attributes of visit :visitNum of patient :hn
-
+<a id="26"></a>
+## 26. Design: The API
+__ See: ~/test/github/rural-clinic/docs/
 ..
 
 ----
@@ -938,8 +921,8 @@ like DOB but not dynamic values like age.
 ..
 
 ----
-<a id=""></a>
-## 28: Problem: Find difference between two dates
+<a id="28"></a>
+## 28. Problem: Find difference between two dates
 __
 
 According to
@@ -959,8 +942,8 @@ Javascript can parse dates in the YYYY-MM-DD string format.
 ..
 
 ----
-<a id=""></a>
-## 29: Problem: Display date in CE and BE formats
+<a id="29"></a>
+## 29. Problem: Display date in CE and BE formats
 __
 
 A date such as 2012-12-02 in Common Era (CE) format:
@@ -976,6 +959,405 @@ According to [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refer
     const event = new Date(Date.UTC(2012, 11, 2, 3, 0, 0));
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     console.log(event.toLocaleDateString('th-TH', options));
+
+..
+
+----
+<a id="30"></a>
+## 30. Problem: Restarting the project after a hiatus
+__ Problem
+
+After being away for several days, a way to get back to the project
+quickly is needed.
+
+What's needed?
+
+..
+__ Start the front-end and backend servers
+
+    # On Left Terminal
+
+    # Backend server
+    cd ~/test/github/rural-clinic
+    morbo -l http://*:4001 Main.pl &
+    vimr Main.pl
+
+    # Frontend server
+    cd ~/test/github/rural-clinic/appsrc
+    npm start &
+    vimr index.js
+    vimr views/vPatientAdd.js
+
+    # View in browser
+    cd ~/test/github/rural-clinic
+    firefox http://localhost:4001
+    ff-refresh.sh public/dist Clinic "Right Terminal" &
+
+..
+__ Open the essential files for editing
+
+    cd ~/test/github/rural-clinic
+    vimr Main.pl
+
+    cd ~/test/github/rural-clinic/appsrc
+    vimr index.js
+
+..
+
+----
+<a id="31"></a>
+## 31. Problem: Implement adding a new patient
+__ Breakdown of parts needed
+
+Need to implement the following:
+
+1. Patient List Page: Add an icon for adding a new patient
+
+2. Add Patient Page: Create it
+
+3. Main.pl: Create endpoint to handle adding a patient
+
+..
+__ 1. Patient List Page: Add an icon for adding a new patient
+
+1. Add icon to side of Patient List
+
+    - appsrc/views/vPatientList.js
+    - from: https://www.iconarchive.com/show/iconoir-icons-by-iconoir-team/add-user-icon.html
+    - Format: PNG
+    - Size: 96px
+    - Store to: ~/test/github/rural-clinic/public/img/patient-add.png
+
+2. On click, route to the Add Patient page
+
+    - m.route.set('/patientAdd')
+
+..
+__ 2. Add Patient Page: Create it
+..
+__   1. File: views/vPatientAdd.js
+..
+__   2. Structure of vPatientAdd.view:
+
+Elements with asterisk (*) have associated interactions.
+
+    view = {
+        Header
+            Title, btnBack*
+
+        Form
+            firstName+,     lastName+
+            gender+,        dob+
+            idcard,         phoneNum,       bloodGroup
+            race,           nationality
+            disease,
+            allergy,
+
+            addrNum,        addrMoo,        addrStreet
+            addrTambon,     addrAmphur
+            addrProvince,   addrPostcode
+
+            contactName,    contactRelation
+            contactPhoneNum
+
+            btnSubmit*
+    }
+
+btnBack
+    - page-back.png
+   - https://www.iconarchive.com/show/iconoir-icons-by-iconoir-team/arrow-left-circle-icon.html 
+   - https://www.iconarchive.com/download/i147439/iconoir-team/iconoir/arrow-left-circle.96.png
+
+..
+__   3. Structure of vPatientAdd.vd:
+
+Design-wise, all structures 
+
+    vd.lang     = en|th         // Whether ui should be EN or TH
+
+    vd.patient  = {             // JS object generated by mPatient
+        hn          : null,     // System-generated in backend
+        firstName   : null,     // Mandatory
+        lastName    : null,     // Mandatory
+        gender      : null,     // Mandatory
+        dob         : null,     // Mandatory
+        disease     : null,
+        allergy     : null,
+        bloodGroup  : null,
+        phoneNum    : null,
+
+        race            : null,
+        nationality     : null,
+        idcard          : null,
+        addrNum         : null,
+        addrMoo         : null,
+        addrStreet      : null,
+        addrTambon      : null,
+        addrAmphur      : null,
+        addrProvince    : null,
+        addrPostcode    : null,
+        contactName     : null,
+        contactRelation : null,
+        contactPhoneNum : null,
+    }
+
+..
+__   4. Interactions:
+
+    1. Click Back
+        - The "Back" button is for the user to return to the Patient-List page
+
+    2. Click Submit
+        - Do front-end validation
+        - Trim all strings to remove prior and trailing spaces
+        - Mandatory fields should have attribute "required"
+        - Pattern for dob       : \d\d\d\d-\d\d-\d\d
+        - Pattern for postcode  : \d\d\d\d\d
+        - On validation error, show error messages
+            - First Name is required
+            - Last Name is required
+            - Gender is required
+            - Date of birth is required
+            - Date of birth format must be YYYY-MM-DD
+            - Postcode format must be NNNNN
+        - On validation success, send request to server with form data
+        - Show error messages or send request to server with form data.
+        - On success, clear form data, show success message ready for
+          another patient.
+        - On failure, keep form data, show error messages.
+
+..
+__   5. States and state-transitions
+
+State: Patient_Add_Start
+    - status: init
+    - Form is empty
+
+State: Patient_Add_In_Progress
+    - status: adding
+    - Error message shown if any form elements with invalid values
+        - element has non-empty value
+        - element *not* in focus
+        - element is invalid
+        - show error msg
+
+State: Patient_Add_Requesting
+    - status: requesting
+    - Message: Request sent. Please wait ...
+
+State: Patient_Add_Success
+    - status: success
+    - Form is empty
+    - Message: Patient added
+
+State: Patient_Add_Failure
+    - status: failure
+    - Form has values
+    - Message: <Relevant error messages>
+
+..
+__   6. Handling Responses to Request
+
+POST /patients
+
+    On success:
+    - Add created patient object to mPatientList
+    - Clear form data
+    - Initialize vd.patient
+    - Show message: Patient added
+
+    On failure:
+    - Keep form data
+    - Show error messages
+
+..
+__ 3. Main.pl: Create endpoint to handle adding a patient
+
+    See: docs/api.md #1 Patients
+
+..
+
+----
+<a id="32"></a>
+## 32. Coding: Naming conventions
+__ Abbreviations
+
+    number      num
+    button      btn
+
+..
+__ Routes
+
+Name routes as <noun><Action> e.g.:
+
+    /patientList
+    /patientAdd
+
+..
+__ Icons
+
+- Name icons as: <noun>-<action> e.g.:
+
+    patient-add.png
+
+..
+__ Docs
+
+- Location: ~/test/github/rural-clinic/docs
+
+- Name docs as lowercase e.g.:
+
+    data-structures.md
+
+..
+__ Tables
+
+Filename same as table name and is singular e.g.:
+
+    File    : Patient.db
+    Table   : Patient
+
+See: ~/test/github/rural-clinic/docs/tables.md
+
+..
+
+----
+<a id="33"></a>
+## 33. Design: Data Structures
+__ ~/test/github/rural-clinic/docs/data-structures.md
+
+After some time, there's a need for a canonical reference of the data
+structures in use.
+
+    ~/test/github/rural-clinic/docs/data-structures.md
+
+..
+
+----
+<a id="34"></a>
+## 34. Design: Frontend Page
+__ Elements of a Frontend Page
+
+1. Design view structure
+    - Main elements of view: header, body, footer
+    - Identify navigation elements
+        - in/out of page
+    - Identify interaction elements
+        - form elements, etc
+
+2. Design view-data structure
+    - Name the view-data: vd
+    - vd contains all the data required to render the view
+    - Part of the view data would include things like Patient
+    - The patient should be constructed from mPatient
+        - mPatient.new()
+
+3. Design interactions
+    - 
+
+4. Design states and state-transitions
+    - Initial state
+    - Terminal/exit states
+    - Intermediate states
+
+..
+
+----
+<a id="35"></a>
+## 35. Design: SQLite tables
+__ One table, one db
+
+Because SQLite locks the entire file/db when updating a table.
+
+See: https://www.sqlite.org/lockingv3.html
+
+..
+
+----
+<a id="35"></a>
+## 35. Design: SQLite tables
+__ Where to keep the tables?
+
+Since there is a folder named 'private' which is already ignored by git,
+that will be where the SQLite tables be kept
+
+..
+__ List of files:
+
+    1. private/Patient.db
+
+..
+
+----
+<a id="36"></a>
+## 36. Problem: How to layout page title with icons
+__
+
+Use Flexbox - the one-dimensional layout method.
+
+Elements:
+    Header      Icon
+
+Icon consumes it's own space.
+Header flex/expand to fill remaining space.
+
+    // Create flex container
+    m('div.flex', [
+    ])
+
+..
+
+----
+<a id="37"></a>
+## 37. Problem: How to remove inner shadow of text input
+__ 
+
+..
+__ Solution
+
+Use CSS:
+
+    border-style:solid
+
+In Tachyons:
+
+    .ba
+
+See: https://stackoverflow.com/questions/12791631/remove-inner-shadow-of-text-input
+
+..
+
+----
+<a id="38"></a>
+## 38. Problem: How to use regex to check date format?
+__ Check date format: YYYY-MM-DD
+
+Regex: \d\d\d\d-\d\d-\d\d
+
+    const re = new RegExp("\d\d\d\d-\d\d-\d\d")
+
+    re.test('2001-12-01') // true
+
+..
+
+----
+<a id="39"></a>
+## 39. Problem: How to extract year from YYYY-MM-DD
+__ Use RegExp
+
+    const re = /(\d\d\d\d)-\d\d-\d\d/
+
+    // parseInt converts String to Int
+    var year = parseInt(dob.match(re)[1])
+
+..
+
+----
+<a id="40"></a>
+## 40. Problem: How to get current year
+__
+
+    new Date().getFullYear()
 
 ..
 
