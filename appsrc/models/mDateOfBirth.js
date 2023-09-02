@@ -13,9 +13,10 @@ var mDateOfBirth = {}
 mDateOfBirth.date = null
 
 // Methods
-mDateOfBirth.fromString = YYYYMMDD => {
-    mDateOfBirth.string = YYYYMMDD
-    mDateOfBirth.date   = new Date(YYYYMMDD)
+mDateOfBirth.fromString = ymd => {
+    // ymd is Common Era date string with format: YYYY-MM-DD e.g. 1999-12-31
+    mDateOfBirth.string = ymd
+    mDateOfBirth.date   = new Date(ymd)
     return mDateOfBirth
 }
 mDateOfBirth.age = lang => {

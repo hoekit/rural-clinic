@@ -14,6 +14,23 @@ mPatientList.data = []
 mPatientList.loadStatus = null      // One of: null | isLoading | loaded
 
 // Methods
+mPatientList.add = patient => {
+    // Return a promise that either:
+    //   resolves to a patient, successfully added to the server, or
+    //   rejects with an error
+
+    return m.request({
+        method: 'POST',
+        url   : '/patients',
+        body  : { patient: patient },
+    }).then(res => {
+        console.log('mPatientList.add/ok',res)
+    })
+    .catch(err => {
+        // TODO: Case request did not complete successfully
+        return Promise.reject(err)
+    })
+}
 mPatientList.load = () => {
     // Return a promise that either:
     //   resolves to a list of patients, or

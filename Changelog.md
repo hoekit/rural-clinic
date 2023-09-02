@@ -42,6 +42,8 @@
 38. Problem: How to use regex to check date format?
 39. Problem: How to extract year from YYYY-MM-DD
 40. Problem: How to get current year
+41. Problem: Building project on new machine
+42. Problem: Speed up time to work on project
 ]
 
 ## Details
@@ -1120,8 +1122,8 @@ __   4. Interactions:
             - Date of birth is required
             - Date of birth format must be YYYY-MM-DD
             - Postcode format must be NNNNN
-        - On validation success, send request to server with form data
-        - Show error messages or send request to server with form data.
+        - On validation error, show error messages
+        - On validation success, send POST request with patient data
         - On success, clear form data, show success message ready for
           another patient.
         - On failure, keep form data, show error messages.
@@ -1358,6 +1360,38 @@ __ Use RegExp
 __
 
     new Date().getFullYear()
+
+..
+
+----
+<a id="41"></a>
+## 41. Problem: Building project on new machine
+__ Steps
+
+    # Get the source
+    cd ~/test/github
+    https://github.com/hoekit/rural-clinic.git
+    # git clone git@github.com:hoekit/rural-clinic.git
+
+    # Rebuild node modules
+    cd ~/test/github/rural-clinic
+    npm update
+
+..
+
+----
+<a id="42"></a>
+## 42. Problem: Speed up time to work on project
+__ Problem
+
+It is still quite slow to start working on the project.
+
+..
+__ Solution
+
+Build a tool to start the context for the work.
+
+    tools/start_work.sh
 
 ..
 

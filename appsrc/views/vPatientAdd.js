@@ -7,7 +7,9 @@
 
 var m     = require("mithril")
 var mLang = require('../models/mLanguage')
+// mLang.useLang('en')
 var S     = mLang.S
+var mPatientList = require("../models/mPatientList")
 
 var vPatientAdd = {}
 var vd = {}     // view-data container
@@ -18,17 +20,22 @@ vd.patient = {}
 vd.error   = {}
 vPatientAdd.view = () => {
 
+    // TODO: Remove mock
+    if (vd.patient.firstName === undefined) {
+        vd.patient = _mockPatient()
+    }
+
     // A single input element
-    var elemInput = (field, width) => {
+    var elemInput = (field, width, attr) => {
         var border = vd.error[field] ? '.b--dark-red' : ''
-        var attr = '[type=text]'
+        attr = attr ? attr : '[type=text]'
         attr = attr + '[id=add-'+field+']'
         return m('div.w-'+width,[
             m('label.w-100.mt2.f5.mid-gray.tl',S(field)),
             m("input"+attr+".w-100.mt1.mb2.ba"+border, {
                 oninput: e => {vd.patient[field] = e.target.value},
                 onfocusout: e => va._validate(field),
-                value: vd.patient[field]
+                value: vd.patient[field],
             }),
             vd.error[field] && m('div.w-100.mb2.dark-red.f5',S(vd.error[field])),
         ])
@@ -89,6 +96,7 @@ vPatientAdd.view = () => {
                 ['contactRelation',30],
                 ['contactPhoneNum',30]
             ),
+            m('div#patientAddError'),
             m('button[type=submit].w-100.mt2.pa2',
                 {onclick:va.add},
                 S('submit')
@@ -101,6 +109,42 @@ vPatientAdd.view = () => {
 va.back = () => m.route.set('/patientList')
 va.add = () => {
     console.log('PatientAdd Submit clicked: '+Date.now())
+
+    // Validate one more time
+    va._validate('firstName')
+    va._validate('lastName')
+    va._validate('gender')
+    va._validate('dob')
+
+    // Display errors effects
+    m.redraw()
+
+    // Guard: There should be no errors
+    if (Object.keys(vd.error).length > 0) return
+
+    // Clone vd.patient
+    var patient = Object.assign({}, vd.patient)
+
+    // Convert dob to Common Era date if current language is TH
+    if (mLang.lang === 'th') {
+        const re = /(\d\d\d\d)(-\d\d-\d\d)/
+        var bornYearCe = parseInt(patient.dob.match(re)[1]) - 543
+        patient.dob = bornYearCe + patient.dob.match(re)[2]
+    }
+
+    mPatientList.add(patient)
+    .then(res => {
+        console.log(res)
+
+        // Handle 'nok' case
+
+        // Handle 'ok' case
+
+    })
+    .catch(err => {
+        // TODO
+        console.log('va.add()',err)
+    })
 }
 va._validate = field => {
     // Trim if field value exists
@@ -118,22 +162,21 @@ va._validateFirstName = val => {
     if (!val) {
         vd.error['firstName'] = 'e2101'
     } else {
-        vd.error['firstName'] = null
+        delete vd.error['firstName']
     }
 }
 va._validateLastName = val => {
     if (!val) {
         vd.error['lastName'] = 'e2102'
     } else {
-        vd.error['lastName'] = null
+        delete vd.error['lastName']
     }
 }
 va._validateGender = val => {
     if (!val) {
         vd.error['gender'] = 'e2103'
-
     } else {
-        vd.error['gender'] = null
+        delete vd.error['gender']
     }
 }
 va._validateDob = val => {
@@ -160,13 +203,16 @@ va._validateDob = val => {
         vd.error['dob'] = 'e2110'
 
     } else {
-        vd.error['dob'] = null
+        delete vd.error['dob']
     }
+
+    vd.error['dob'] && console.log('error:dob',vd.error['dob'],S(vd.error['dob']))
 }
+
 var _dobFormatValid = dob => {
     // Return true if matches YYYY-MM-DD
     const re = /\d\d\d\d-\d\d-\d\d/
-    console.log(dob,re.test(dob))
+    // console.log(dob,re.test(dob))
     return re.test(dob)
 }
 var _dobMonthValid = dob => {
@@ -178,7 +224,7 @@ var _dobMonthValid = dob => {
 var _dobDateValid = dob => {
     // Return true if dob is a valid date
     // - valueOf() invalid date is NaN
-    return Number.isNaN( new Date(dob).valueOf() )
+    return Number.isNaN( new Date(dob).valueOf() ) === false
 }
 var _dobDayValid = dob => {
     // Return true if day value is valid
@@ -194,9 +240,8 @@ var _dobNotBorn = (dob,lang) => {
     var bornYearCe = parseInt(dob.match(re)[1]) - extraBuddhistEraYears
     var thisYearCe = new Date().getFullYear()
 
-    // Assume 
     var age = thisYearCe - bornYearCe
-    console.log(bornYearCe,thisYearCe,age)
+    // console.log(bornYearCe,thisYearCe,age)
     return age < 0
 }
 var _dobTooOld = (dob,lang) => {
@@ -207,10 +252,17 @@ var _dobTooOld = (dob,lang) => {
     var bornYearCe = parseInt(dob.match(re)[1]) - extraBuddhistEraYears
     var thisYearCe = new Date().getFullYear()
 
-    // Assume 
     var age = thisYearCe - bornYearCe
-    console.log(bornYearCe,thisYearCe,age)
+    // console.log(bornYearCe,thisYearCe,age)
     return age > 130
+}
+var _mockPatient = () => {
+    return {
+        firstName   : 'First',
+        lastName    : 'Last',
+        gender      : 'M',
+        dob         : '2561-01-01',
+    }
 }
 
 module.exports = vPatientAdd

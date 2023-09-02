@@ -15,7 +15,14 @@ BEGIN {
 }
 
 use Mojolicious::Lite;
+use Mojo::JSON qw(decode_json encode_json);
+use DBI;
+use Data::Dumper;
 use Path::Tiny qw/path/;
+
+use lib ("lib", "../lib");
+use SqlHelper qw/run_sql/;
+use HATX qw/hatx/;
 
 # Web service parameters (SP)
 my $SP = {
@@ -23,6 +30,21 @@ my $SP = {
     ver  => '0.0.0-1',        # $VERSION
     env  => `hostname` eq 'i5' ? 'DEV' : 'PROD',
 };
+
+# Global parameters
+my $PEEK_LEVEL = 2; ## Disallow peeks below this level
+my $dbpatient = DBI->connect("dbi:SQLite:dbname=private/Patient.db","","",{sqlite_unicode=>1});
+
+sub peek {      # ( $level, $res ) --> $res
+    ## If $level is at least PEEK_LEVEL, print content of $res
+    my ($level, $res) = @_;
+    return $res if $level < $PEEK_LEVEL;
+
+    my $file = (caller(0))[1];
+    my $line = (caller(0))[2];
+    say "$file line $line: ". Dumper $res;
+    return $res;
+}
 
 ######################################################################
 # API Endpoints
@@ -63,11 +85,90 @@ get '/patients' => sub {
 
     my $data = [ $mock_1001, $mock_1002 ];
 
-    $c->res->headers->header("Access-Control-Allow-Origin" => "*");
+    # $c->res->headers->header("Access-Control-Allow-Origin" => "*");
     return $c->render(json => [
         'ok',
         $data || [],
     ]);
+};
+
+post '/patients' => sub {
+    my $c = shift;
+    my $data = peek 0, decode_json($c->req->body);
+
+    # Initialize response data
+    my $res = $data;                            # Response container
+    my $errors = [];                            # Error container
+    my $sqlres;
+
+    # Guard: Required fields should not be null/empty
+    # TODO: Assume required fields work
+
+    # Guard: Date fields should be valid
+    # TODO: Assume dates are valid
+
+    # Guard: firstName + lastName + gender + dob should be unique
+    # TODO:
+    # - Select from table Patient
+    $sqlres = peek 3, run_sql( $dbpatient, <<END
+SELECT firstName, lastName, gender, dob
+  FROM Patient
+ WHERE firstName == ? AND lastName == ? AND gender == ? AND dob == ?
+END
+    ,
+    $data->{patient}{firstName},
+    $data->{patient}{lastName},
+    $data->{patient}{gender},
+    $data->{patient}{dob}
+    );
+
+    # Do action: Add record
+    # TODO/DOING: Insert record into table Patient
+
+    # List of fields excluding the first field "hn"
+    my $fields = [qw/hn firstName lastName dob gender disease allergy
+        bloodGroup phoneNum race nationality idcard addrNum addrMoo
+        addrStreet addrTambon addrAmphur addrProvince addrPostcode
+        contactName contactRelation contactPhoneNum/];
+
+    # Get next HN and update data object
+    $data->{patient}{hn} = peek 3, run_sql( $dbpatient,
+        'SELECT COALESCE(Max(hn),0)+1 FROM PATIENT')->{data}[0][0];
+
+    # Create placeholders from fields
+    my $placeholders = '?,' x $#$fields . '?';
+
+    # Create values from fields
+    my $values = hatx($fields)
+        ->maap(sub {
+            defined($data->{patient}{$_[0]})
+                  ? $data->{patient}{$_[0]}
+                  : undef })
+        ->info
+        ->to_obj;
+
+    $sqlres = peek 3, run_sql( $dbpatient,
+        'INSERT INTO Patient VALUES($placeholders)',
+        @$values);
+
+    # Check for errors
+    if ($sqlres->{status} eq 'nok') {
+        push @$errors, 'Server error. Please inform administrator';
+    }
+
+    # Send nok response on error
+    return $c->render(json => peek 3, [
+        'nok',
+        $res,
+        $errors
+    ]) if $#$errors > -1;
+
+    # Send ok response
+    return $c->render(json => peek 3, [
+        'ok',
+        $res,
+    ]);
+
 };
 
 ######################################################################

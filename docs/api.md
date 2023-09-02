@@ -4,6 +4,7 @@
 [
 1. Patients
 2. Visits
+3. Template for POST requests
 ]
 
 ## Details
@@ -147,6 +148,55 @@ __ Visits
 
     POST /visit/:hn/:visitNum
         - Updates attributes of visit :visitNum of patient :hn
+
+..
+
+----
+<a id="3"></a>
+## 3. Template for POST requests
+__ On JS Frontend
+
+    mPatientList.add(vd.patient)
+    .then(patient => {
+        console.log(patient)
+    })
+    .catch(err => {
+        // TODO
+        console.log('va.add()',err)
+    })
+
+..
+__ On Mojo Backend
+
+post '/patients' => sub {
+    my $c = shift;
+    my $data = peek 3, decode_json($c->req->body);
+
+    # Initialize response data
+    my $res = { patient => $data };             # Response container
+    my $errors = [];                            # Error container
+
+    # Guards
+
+    # Do action - Send nok response on error
+
+    # Start with NotImplemented error
+    push @$errors, 'NotImplemented';
+
+    # Send nok response
+    return $c->render(json => [
+        'nok',
+        $res,
+        $errors
+    ]) if $#$errors > -1;
+
+    # Send ok response
+    return $c->render(json => [
+        'ok',
+        $res,
+    ]);
+
+};
 
 ..
 
