@@ -151,6 +151,8 @@ va.add = () => {
 
             document.getElementById("add-firstName").focus();
             vd.patient   = {}
+            // Clear Info after 2 seconds
+            window.setTimeout(() => { vd.formInfo = null },2)
 
         } else {                        // Die. Should not reach here
             vd.formError = 'Unexpected error. Please inform administrator.'
