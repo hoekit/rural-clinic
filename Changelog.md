@@ -32,7 +32,7 @@
 28. Problem: Find difference between two dates
 29. Problem: Display date in CE and BE formats
 30. Problem: Restarting the project after a hiatus
-31. Problem: Implement adding a new patient - DOING
+31. Problem: Implement adding a new patient
 32. Coding: Naming conventions
 33. Design: Data Structures
 34. Design: Frontend Page
@@ -45,6 +45,7 @@
 41. Problem: Building project on new machine
 42. Problem: Speed up time to work on project
 43. Problem: Make debugging structures easy
+44. Problem: Implement search
 ]
 
 ## Details
@@ -1410,6 +1411,25 @@ __ Solution:
 Create a window object: window.tt and attach various objects to it.
 
     See: models/mDebug.js
+
+..
+
+----
+<a id="44"></a>
+## 44. Problem: Implement search
+__ Problem
+
+The search function should filter out items that do not match.
+
+Design wise, filter on firstName and lastName.
+
+..
+__ Solution
+
+Create a regex using the search field.
+
+If the search field is nonEmpty, each patient card is checked and is
+displayed only if the firstName, lastName matches.
 
 ..
 
