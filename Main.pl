@@ -34,6 +34,19 @@ my $SP = {
 # Global parameters
 my $PEEK_LEVEL = 2; ## Disallow peeks below this level
 my $dbpatient = DBI->connect("dbi:SQLite:dbname=private/Patient.db","","",{sqlite_unicode=>1});
+my $PATIENT = {
+    # Full set of fields
+    fullColumns => [qw/hn firstName lastName dob gender disease allergy
+        bloodGroup phoneNum race nationality idcard addrNum addrMoo
+        addrStreet addrTambon addrAmphur addrProvince addrPostcode
+        contactName contactRelation contactPhoneNum/],
+
+    # Sequence of fields in the patient data.
+    # This sequence should be the same sequence as that in the frontend
+    # else there will be problems.
+     partialColumns => [qw/hn firstName lastName dob gender disease allergy
+        bloodGroup/],
+};
 
 sub peek {      # ( $level, $res ) --> $res
     ## If $level is at least PEEK_LEVEL, print content of $res
@@ -55,35 +68,10 @@ get '/' => sub { shift->redirect_to('/index.html') };
 get '/patients' => sub {
     my $c = shift;
 
-    # Sequence of fields in the patient data.
-    # This sequence should be the same sequence as that in the frontend
-    # else there will be problems.
-    my $fields = [qw/hn firstName lastName dob gender disease allergy
-        bloodGroup/];
-
-    my $mock_1001 = [
-        1001,                   # hn
-        "First Name 1001",      # firstName
-        "Last Name 1001",       # lastName
-        "2000-01-01",           # dob
-        "ชาย",                  # gender
-        "-",                    # disease
-        "-",                    # allergy
-        undef,                  # bloodGroup
-    ];
-
-    my $mock_1002 = [
-        1002,                   # hn
-        "First Name 1002",      # firstName
-        "Last Name 1002",       # lastName
-        "2000-01-01",           # dob
-        "หญิง",                  # gender
-        "-",                    # disease
-        "-",                    # allergy
-        undef,                  # bloodGroup
-    ];
-
-    my $data = [ $mock_1001, $mock_1002 ];
+    # Fetch data
+    my $data = peek 0, run_sql( $dbpatient,
+        "SELECT ". join(', ', @{$PATIENT->{partialColumns}}) ." FROM Patient"
+    )->{data};
 
     # $c->res->headers->header("Access-Control-Allow-Origin" => "*");
     return $c->render(json => [
@@ -125,10 +113,7 @@ post '/patients' => sub {
     # Do action: Add record
 
     # List of fields excluding the first field "hn"
-    my $fields = [qw/hn firstName lastName dob gender disease allergy
-        bloodGroup phoneNum race nationality idcard addrNum addrMoo
-        addrStreet addrTambon addrAmphur addrProvince addrPostcode
-        contactName contactRelation contactPhoneNum/];
+    my $fields = $PATIENT->{fullColumns};
 
     # Get next HN and update data object
     # Minimum value of HN is 1000
