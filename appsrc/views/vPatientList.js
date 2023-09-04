@@ -1,4 +1,4 @@
-// src/views/vPatientList.js v0.0.2-3
+// src/views/vPatientList.js v0.0.2-4
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -36,8 +36,17 @@ vPatientList.oninit = () => {
 }
 vPatientList.view = () => {
 
+    // Search Regex
+    var search_re = new RegExp(vPatientList.search, 'i')
+
     // Renders a single patient
     var patient_view = patient => {
+
+        // Guard: Only display if item matches non-zero search term
+        if ((vPatientList.search !== '') &&
+            (!search_re.test(patient.firstName+patient.lastName))) {
+            return null
+        }
 
         var keyVal = (key,value,width) => {
             // Default width to 50% unless defined
