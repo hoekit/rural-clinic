@@ -21,9 +21,11 @@ vd.error   = {}
 vPatientAdd.view = () => {
 
     // TODO: Remove mock
+    /*
     if (vd.patient.firstName === undefined) {
         vd.patient = _mockPatient()
     }
+    */
 
     // A single input element
     var elemInput = (field, width, attr) => {
@@ -96,7 +98,10 @@ vPatientAdd.view = () => {
                 ['contactRelation',30],
                 ['contactPhoneNum',30]
             ),
-            m('div#patientAddError'),
+
+            m('div.red.f6', vd.formError),
+            m('div.blue.f6', vd.formInfo),
+
             m('button[type=submit].w-100.mt2.pa2',
                 {onclick:va.add},
                 S('submit')
@@ -108,7 +113,6 @@ vPatientAdd.view = () => {
 // vPatient View Actions
 va.back = () => m.route.set('/patientList')
 va.add = () => {
-    console.log('PatientAdd Submit clicked: '+Date.now())
 
     // Validate one more time
     va._validate('firstName')
@@ -134,16 +138,31 @@ va.add = () => {
 
     mPatientList.add(patient)
     .then(res => {
-        console.log(res)
 
-        // Handle 'nok' case
+        if (res[0] === 'nok') {         // Show error message
+            vd.formError = res[2][0]
+            vd.formInfo  = null
 
-        // Handle 'ok' case
+        } else if (res[0] === 'ok') {   // Handle 'ok' case
+            vd.formError = null
+            vd.formInfo  = [
+                'Patient Added: ', vd.patient.firstName, vd.patient.lastName
+            ].join(' ')
+
+            document.getElementById("add-firstName").focus();
+            vd.patient   = {}
+
+        } else {                        // Die. Should not reach here
+            vd.formError = 'Unexpected error. Please inform administrator.'
+            vd.formInfo  = null
+
+        }
 
     })
     .catch(err => {
-        // TODO
-        console.log('va.add()',err)
+        // console.log('va.add()',err)
+        vd.formError = err
+        vd.formInfo  = null
     })
 }
 va._validate = field => {

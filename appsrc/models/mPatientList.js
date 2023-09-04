@@ -23,13 +23,8 @@ mPatientList.add = patient => {
         method: 'POST',
         url   : '/patients',
         body  : { patient: patient },
-    }).then(res => {
-        console.log('mPatientList.add/ok',res)
     })
-    .catch(err => {
-        // TODO: Case request did not complete successfully
-        return Promise.reject(err)
-    })
+
 }
 mPatientList.load = () => {
     // Return a promise that either:
