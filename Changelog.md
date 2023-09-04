@@ -46,6 +46,7 @@
 42. Problem: Speed up time to work on project
 43. Problem: Make debugging structures easy
 44. Problem: Implement search
+45. VERSION 0.0.2
 ]
 
 ## Details
@@ -1431,5 +1432,11 @@ Create a regex using the search field.
 If the search field is nonEmpty, each patient card is checked and is
 displayed only if the firstName, lastName matches.
 
+..
+
+----
+<a id="45"></a>
+## 45. VERSION 0.0.2
+__ Patient Add works
 ..
 
