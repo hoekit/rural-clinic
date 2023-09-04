@@ -44,6 +44,7 @@
 40. Problem: How to get current year
 41. Problem: Building project on new machine
 42. Problem: Speed up time to work on project
+43. Problem: Make debugging structures easy
 ]
 
 ## Details
@@ -1392,6 +1393,23 @@ __ Solution
 Build a tool to start the context for the work.
 
     tools/start_work.sh
+
+..
+
+----
+<a id="43"></a>
+## 43. Problem: Make debugging structures easy
+__ Problem:
+
+If debugging is enabled, it would be nice to be able to view data of
+each module.
+
+..
+__ Solution:
+
+Create a window object: window.tt and attach various objects to it.
+
+    See: models/mDebug.js
 
 ..
 

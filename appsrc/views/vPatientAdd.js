@@ -265,5 +265,8 @@ var _mockPatient = () => {
     }
 }
 
+vPatientAdd.vd = vd
+vPatientAdd.va = va
+
 module.exports = vPatientAdd
 

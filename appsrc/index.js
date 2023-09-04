@@ -10,6 +10,7 @@ var vMain        = require('./views/vMain')
 var vLogin       = require('./views/vLogin')
 var vPatientList = require('./views/vPatientList')
 var vPatientAdd  = require('./views/vPatientAdd')
+var mDebug       = require('./models/mDebug')
 
 var base = document.getElementById('base')
 m.route(base, '/main', {

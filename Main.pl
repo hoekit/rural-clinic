@@ -27,7 +27,7 @@ use HATX qw/hatx/;
 # Web service parameters (SP)
 my $SP = {
     name => 'Main.pl',
-    ver  => '0.0.0-1',        # $VERSION
+    ver  => '0.0.1-1',        # $VERSION
     env  => `hostname` eq 'i5' ? 'DEV' : 'PROD',
 };
 
@@ -102,28 +102,27 @@ post '/patients' => sub {
     my $sqlres;
 
     # Guard: Required fields should not be null/empty
-    # TODO: Assume required fields work
+    # TODO: Assume required fields are neither null or empty
 
     # Guard: Date fields should be valid
     # TODO: Assume dates are valid
 
     # Guard: firstName + lastName + gender + dob should be unique
-    # TODO:
-    # - Select from table Patient
-    $sqlres = peek 3, run_sql( $dbpatient, <<END
-SELECT firstName, lastName, gender, dob
-  FROM Patient
- WHERE firstName == ? AND lastName == ? AND gender == ? AND dob == ?
-END
-    ,
-    $data->{patient}{firstName},
-    $data->{patient}{lastName},
-    $data->{patient}{gender},
-    $data->{patient}{dob}
-    );
+    my $num_recs = peek 0, run_sql( $dbpatient,
+        'SELECT count(*) FROM Patient WHERE '
+        . 'firstName == ? AND lastName == ? AND gender == ? AND dob == ?',
+        $data->{patient}{firstName},
+        $data->{patient}{lastName},
+        $data->{patient}{gender},
+        $data->{patient}{dob}
+    )->{data}[0][0];
+
+    if ($num_recs > 0) {
+        push @$errors, 'Record with name, gender and dob already exist';
+        goto EXIT_NOK;
+    }
 
     # Do action: Add record
-    # TODO/DOING: Insert record into table Patient
 
     # List of fields excluding the first field "hn"
     my $fields = [qw/hn firstName lastName dob gender disease allergy
@@ -132,39 +131,39 @@ END
         contactName contactRelation contactPhoneNum/];
 
     # Get next HN and update data object
-    $data->{patient}{hn} = peek 3, run_sql( $dbpatient,
+    $data->{patient}{hn} = peek 0, run_sql( $dbpatient,
         'SELECT COALESCE(Max(hn),0)+1 FROM PATIENT')->{data}[0][0];
 
     # Create placeholders from fields
-    my $placeholders = '?,' x $#$fields . '?';
+    my $placeholders = peek 0, '?,' x $#$fields . '?';
 
     # Create values from fields
-    my $values = hatx($fields)
-        ->maap(sub {
-            defined($data->{patient}{$_[0]})
-                  ? $data->{patient}{$_[0]}
-                  : undef })
-        ->info
+    my $values = peek 0, hatx($fields)
+        ->maap(sub { $data->{patient}{$_[0]} })
+        #->info
         ->to_obj;
 
-    $sqlres = peek 3, run_sql( $dbpatient,
-        'INSERT INTO Patient VALUES($placeholders)',
+    $sqlres = peek 0, run_sql( $dbpatient,
+        "INSERT INTO Patient VALUES($placeholders)",
         @$values);
 
     # Check for errors
     if ($sqlres->{status} eq 'nok') {
         push @$errors, 'Server error. Please inform administrator';
+        goto EXIT_NOK;
     }
 
     # Send nok response on error
-    return $c->render(json => peek 3, [
+    EXIT_NOK:
+    return $c->render(json => peek 0, [
         'nok',
         $res,
         $errors
     ]) if $#$errors > -1;
 
     # Send ok response
-    return $c->render(json => peek 3, [
+    EXIT_OK:
+    return $c->render(json => peek 0, [
         'ok',
         $res,
     ]);
