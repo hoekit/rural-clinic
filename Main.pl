@@ -131,8 +131,9 @@ post '/patients' => sub {
         contactName contactRelation contactPhoneNum/];
 
     # Get next HN and update data object
+    # Minimum value of HN is 1000
     $data->{patient}{hn} = peek 0, run_sql( $dbpatient,
-        'SELECT COALESCE(Max(hn),0)+1 FROM PATIENT')->{data}[0][0];
+        'SELECT COALESCE(Max(hn),1000)+1 FROM PATIENT')->{data}[0][0];
 
     # Create placeholders from fields
     my $placeholders = peek 0, '?,' x $#$fields . '?';
