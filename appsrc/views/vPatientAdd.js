@@ -20,13 +20,6 @@ vd.patient = {}
 vd.error   = {}
 vPatientAdd.view = () => {
 
-    // TODO: Remove mock
-    /*
-    if (vd.patient.firstName === undefined) {
-        vd.patient = _mockPatient()
-    }
-    */
-
     // A single input element
     var elemInput = (field, width, attr) => {
         var border = vd.error[field] ? '.b--dark-red' : ''
@@ -276,14 +269,6 @@ var _dobTooOld = (dob,lang) => {
     var age = thisYearCe - bornYearCe
     // console.log(bornYearCe,thisYearCe,age)
     return age > 130
-}
-var _mockPatient = () => {
-    return {
-        firstName   : 'First',
-        lastName    : 'Last',
-        gender      : 'M',
-        dob         : '2561-01-01',
-    }
 }
 
 vPatientAdd.vd = vd
