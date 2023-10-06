@@ -1,4 +1,4 @@
-// src/views/vPatientList.js v0.0.2-4
+// appsrc/views/vPatientList.js v0.0.2-5
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -44,7 +44,7 @@ vPatientList.view = () => {
 
         // Guard: Only display if item matches non-zero search term
         if ((vPatientList.search !== '') &&
-            (!search_re.test(patient.firstName+patient.lastName))) {
+            (!search_re.test(patient.firstName+patient.lastName+patient.hn))) {
             return null
         }
 
@@ -74,7 +74,7 @@ vPatientList.view = () => {
                 keyVal('hn',patient.hn,30),
                 m('img.db.ml-auto.w-1-5em.pa1.f4', {
                     src:'/img/patient-edit.png',
-                    onclick: () => console.log('Edit Patient')
+                    onclick: () => m.route.set('/patientEdit/'+patient.hn)
                 }),
                 m('img.db.w-1-5em.pa1.f4', {
                     src:'/img/patient-delete.png',
@@ -95,21 +95,8 @@ vPatientList.view = () => {
             })
         ]),
 
-        // Header
-        /*
-        m('div.flex.mt3.mb2.pa0',[
-            m('div.w-90.pr2.pl2',[
-                m('div.f2.tc.ttu.tracked','Patient List')
-            ]),
-            m('img.w-10.mt-auto.mw2-5.h-fit', {
-                src:'/img/patient-add.png',
-                onclick: () => console.log('Add Patient')
-            })
-        ]),
-        */
-
         // Search
-        m('input[type=text][autofocus].mt1.w-100', {
+        m('input[type=text][autofocus].mt1.pa2.w-100.ba.br3', {
             placeholder:S('search'),
             oninput: e => {vPatientList.search = e.target.value},
             value: vPatientList.search

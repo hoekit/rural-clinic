@@ -1,4 +1,4 @@
-// src/models/mPatientList.js v0.0.2-2
+// appsrc/models/mPatientList.js v0.0.2-3
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -22,6 +22,18 @@ mPatientList.add = patient => {
     return m.request({
         method: 'POST',
         url   : '/patients',
+        body  : { patient: patient },
+    })
+
+}
+mPatientList.edit = patient => {
+    // Return a promise that either:
+    //   resolves to a patient, successfully added to the server, or
+    //   rejects with an error
+
+    return m.request({
+        method: 'POST',
+        url   : '/patient/'+patient.hn,
         body  : { patient: patient },
     })
 
@@ -84,6 +96,42 @@ mPatientList.load = () => {
     .catch(err=> {
         // TODO: Case request did not complete successfully
         return Promise.reject(err)
+    })
+}
+mPatientList.getFullRecord = id => {
+    // Return a promise that either:
+    //   resolves to a full patient record, or
+    //   rejects with an error
+
+    return m.request({
+        method: 'GET',
+        url   : '/patient/' + id
+    })
+    .then(res => {
+        // res is a simply a list: [ reqStatus, reqData, reqError ]
+
+        // reqStatus is One of: ok|nok
+        const reqStatus = res[0]
+
+        // reqData is a JSON object containing the full record
+        //   { patient: { hn: ..., firstName: ... }}
+        const reqData = res[1]
+
+        // If status is ok, return the record
+        if (reqStatus === 'ok') {
+            return reqData.patient
+
+        } else {
+            // TODO: Case request succeeded but reqStatus is not ok
+            const reqError = res[2]
+            return Promise.reject(reqError)
+
+        }
+    })
+    .catch(err => {
+        // TODO: Case request did not complete successfully
+        return Promise.reject(err)
+
     })
 }
 mPatientList._mock = key => {

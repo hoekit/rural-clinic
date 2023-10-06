@@ -1,4 +1,4 @@
-// src/index.js v0.0.2-4
+// src/index.js v0.0.2-5
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,14 +10,16 @@ var vMain        = require('./views/vMain')
 var vLogin       = require('./views/vLogin')
 var vPatientList = require('./views/vPatientList')
 var vPatientAdd  = require('./views/vPatientAdd')
+var vPatientEdit = require('./views/vPatientEdit')
 var mDebug       = require('./models/mDebug')
 
 var base = document.getElementById('base')
 m.route(base, '/main', {
-    '/main'         : vMain,
-    '/login'        : vLogin,
-    '/patientList'  : vPatientList,
-    '/patientAdd'   : vPatientAdd,
-})
+    '/main'             : vMain,
+    '/login'            : vLogin,
 
+    '/patientList'      : vPatientList,
+    '/patientAdd'       : vPatientAdd,
+    '/patientEdit/:id'  : vPatientEdit,
+})
 

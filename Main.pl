@@ -1,4 +1,4 @@
-# Main.pl v0.0.2-2
+# Main.pl v0.0.2-3
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -44,7 +44,7 @@ my $PATIENT = {
     # Sequence of fields in the patient data.
     # This sequence should be the same sequence as that in the frontend
     # else there will be problems.
-     partialColumns => [qw/hn firstName lastName dob gender disease allergy
+    partialColumns => [qw/hn firstName lastName dob gender disease allergy
         bloodGroup/],
 };
 
@@ -73,7 +73,33 @@ get '/patients' => sub {
         "SELECT ". join(', ', @{$PATIENT->{partialColumns}}) ." FROM Patient"
     )->{data};
 
-    # $c->res->headers->header("Access-Control-Allow-Origin" => "*");
+    return $c->render(json => [
+        'ok',
+        $data || [],
+    ]);
+};
+
+get '/patient/:hn' => sub {
+    my $c = shift;
+    my $hn = $c->param('hn');
+
+    # Fetch data
+    my $record = peek 0, run_sql( $dbpatient,
+        "SELECT ". join(', ', @{$PATIENT->{fullColumns}}) ." FROM Patient".
+        " WHERE hn = ?", $hn
+    )->{data}[0];
+
+    # TODO: Handle cases where record is not found
+
+    my $data = peek 0, { patient =>
+        # Iterate over columns
+        hatx([0..$#{$PATIENT->{fullColumns}}])
+            # Create href with column name as key and patient value as value
+            ->to_href(sub {$PATIENT->{fullColumns}[$_[0]], $record->[$_[0]]})
+            ->to_obj
+        };
+
+    EXIT_OK:
     return $c->render(json => [
         'ok',
         $data || [],
@@ -129,6 +155,73 @@ post '/patients' => sub {
         #->info
         ->to_obj;
 
+    $sqlres = peek 0, run_sql( $dbpatient,
+        "INSERT INTO Patient VALUES($placeholders)",
+        @$values);
+
+    # Check for errors
+    if ($sqlres->{status} eq 'nok') {
+        push @$errors, 'Server error. Please inform administrator';
+        goto EXIT_NOK;
+    }
+
+    # Send nok response on error
+    EXIT_NOK:
+    return $c->render(json => peek 0, [
+        'nok',
+        $res,
+        $errors
+    ]) if $#$errors > -1;
+
+    # Send ok response
+    EXIT_OK:
+    return $c->render(json => peek 0, [
+        'ok',
+        $res,
+    ]);
+
+};
+
+post '/patient/:hn' => sub {
+    my $c = shift;
+    my $hn = $c->param('hn');
+    my $data = peek 0, decode_json($c->req->body);
+
+    # Initialize response data
+    my $res = $data;                            # Response container
+    my $errors = [];                            # Error container
+    my $sqlres;
+
+    # Guard: Required fields should not be null/empty
+    # TODO: Assume required fields are neither null or empty
+
+    # Guard: Date fields should be valid
+    # TODO: Assume dates are valid
+
+    # Guard: HN should exist
+    # TODO: Assume HN exists
+
+    # Do action: Update the record
+
+    # List of fields excluding the first field "hn"
+    my $fields = $PATIENT->{fullColumns};
+
+    # Create placeholders from fields
+    my $placeholders = peek 0, '?,' x $#$fields . '?';
+
+    # Create values from fields
+    my $values = peek 0, hatx($fields)
+        ->maap(sub { $data->{patient}{$_[0]} })
+        #->info
+        ->to_obj;
+
+    # First delete the old record
+    $sqlres = peek 0, run_sql( $dbpatient,
+        "DELETE FROM Patient WHERE hn = ?",
+        $hn);
+
+    # Insert the new one
+    # TODO: Use a proper UPDATE statement
     $sqlres = peek 0, run_sql( $dbpatient,
         "INSERT INTO Patient VALUES($placeholders)",
         @$values);

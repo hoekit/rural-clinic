@@ -1,4 +1,4 @@
-# lib/HATX.pm v0.0.2-1
+# lib/HATX.pm v0.0.2-2
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -140,10 +140,19 @@ sub filter_if {
 
 Applies the function $fn to all elements.
 
-Example: Square all elements in array:
+    $fn
+        - For hashref,  function signature should be ($key,$val) -> ($key,$val)
+        - For arrayref, function signature should be ($val)      -> ($val)
+
+Example: Square all elements in arrayref:
 
     hatx([1,2,3])->maap(sub { $_[0] * $_[0]})->to_obj
     # Returns [1,4,9]
+
+Example: Square all values in hashref
+
+    hatx({a=>1,b=>2,c=>3})->maap(sub { $_[0], $_[1]*$_[1] })->to_obj
+    # Returns { a => 1, b => 4,c => 9 }
 
 =cut
 sub maap {
@@ -170,7 +179,19 @@ sub maap {
 }
 
 =head2 to_href
-    $fn     - Function that takes a single variable
+
+Assumes current struct is an arrayref. Converts arrayref to a hashref
+using provided function, $fn
+
+    $fn - Function takes a single variable and returns a key, val
+
+Example:
+
+    hatx(['H','A','T','X'])
+        ->to_href(sub { $_[0], ord($_[0]) })
+        ->to_obj;
+    # Returns { H => 72, A => 65, T => 84, X => 88}
+
 =cut
 sub to_href {
     my ($o,$fn) = @_;
@@ -182,8 +203,12 @@ sub to_href {
 }
 
 =head2 to_aref
-    $fn2    - Function that takes a two variables
-    Assumes H is defined
+
+Assumes current struct is a hashref. Converts hashref to an arrayref
+using provided function, $fn
+
+    $fn2 - Function takes a two variables and returns a single value
+
 =cut
 sub to_aref {
     my ($o,$fn2) = @_;
@@ -202,11 +227,9 @@ sub to_aref {
         return ($v,$v)
     };
     my $obj = $o->maap($new_fn2)->to_obj;
-    say 'obj: '. dumper $obj;
 
     $o->{A} = [sort values %{$obj}];
 
-    #$o->{A} = [sort keys %{$o->maap($fn2)->to_obj}];
     $o->{H} = undef;
     return $o;
 }
@@ -283,6 +306,23 @@ sub eeach {
     return $o;
 }
 
+=head2 info( $prefix )
+
+Display struct content with some prefix.
+
+Example:
+
+    hatx([2,3,5,7])->info('Primes');
+
+    # Prints
+    Primes: [
+      2,
+      3,
+      5,
+      7
+    ]
+
+=cut
 sub info {
     my $o = shift;
     my $phrase = shift || 'info';

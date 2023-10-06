@@ -47,6 +47,7 @@
 43. Problem: Make debugging structures easy
 44. Problem: Implement search
 45. VERSION 0.0.2
+46. Problem: Implement Patient Edit
 ]
 
 ## Details
@@ -1438,5 +1439,114 @@ displayed only if the firstName, lastName matches.
 <a id="45"></a>
 ## 45. VERSION 0.0.2
 __ Patient Add works
+..
+
+----
+<a id="46"></a>
+## 46. Problem: Implement Patient Edit
+__ Changes Needed
+
+1. Update appsrc/views/vPatientList.js
+
+2. Create appsrc/views/vPatientEdit.js
+    - Add vPatientEdit to mDebug
+
+3. Update appsrc/models/mPatientList.js
+
+4. Update Main.pl
+    - Implement GET /patient/:hn
+    - Implement the POST /patient/:hn
+
+5. Update appsrc/index.js
+    - Add new route to the "Patient Edit" page
+
+..
+__   1. Update appsrc/views/vPatientList.js
+
+    Implement patient edit for each patient:
+    - Clicking on the Edit Icon will open the Patient Edit page
+    - Pass the key i.e. HN number to the Patient Edit page
+        - Can it be passed as a parameter?
+            - Preferred as it is more obvious
+        - Or passed as a background variable?
+        - Conclusion: HN is passed as a parameter in the route e.g.
+            - m.route.set('/patientEdit/'+patient.hn)
+
+    Enhance search to include HN
+
+..
+__   2. Create appsrc/views/vPatientEdit.js
+
+    - Use the key, fetch the full record from the server
+        - call function implemented in mPatientList
+    - Display the fields for editing, except HN
+    - Page similar to vPatientAdd.js
+    - Send the record submit button clicked
+        - call function implemented in mPatientList
+    - On success,
+        - inform the user
+        - keep data on screen
+    - On failure
+        - show error
+        - keep data on screen
+
+..
+__   3. Update appsrc/models/mPatientList.js
+
+    Implement mPatientList.getFullRecord( hn )
+        - Fetches the full record of given HN
+        - Sends request to backend via GET /patient/:hn
+
+    Implement mPatientList.edit( patient )
+        - Handles edits to the patient.
+        - Sends request to backend via POST /patient/:hn
+
+..
+__   4. Update Main.pl
+
+    Implement GET /patient/:hn
+    - This endpoint is called prior to editing a HN. First the full
+      record for the HN is retrieved using this endpoint.
+    - Fetch the record from database, which is an array
+    - Turn array into a href/object
+    - Returns the full record for patient with given :hn
+    - TODO:
+        - Handle case where record is not found
+
+    Implement the POST /patient/:hn
+    - This endpoint is called to apply edits to patient records.
+    - Validate the provided values.
+    - Update the record.
+    - On Success:
+        Return the data that was provided in the request
+    - On Failure:
+        Return the errors found
+    - TODO:
+        - Check that required fields are neither null nor empty
+        - Check that date fields has valid values
+        - Check that HN exists
+
+..
+__   5. Update appsrc/index.js
+
+Editing a patient requires a new page and a corresponding route:
+    - /patientEdit/:id
+
+..
+__ Other Incidental Changes
+
+1. Update appsrc/models/mDebug.js
+    - Add vPatientEdit to the debug module
+
+2. Update appsrc/models/mLanguage.js
+    - Modify wording in search bar
+
+3. Update docs/api.md
+    - Create GET /patient/:hn
+    - Create POST /patient/:hn
+
+4. Update lib/HATX.pm
+    - Add documentation and examples
+
 ..
 

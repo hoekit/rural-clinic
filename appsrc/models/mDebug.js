@@ -1,4 +1,4 @@
-// src/models/mDebug.js v0.0.2-1
+// src/models/mDebug.js v0.0.2-2
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,11 +10,12 @@ var Env = 'DEV'
 var init = function (tt) {
 
     // Add each module to debug
-    ['mPatientList', 'vPatientAdd'].map(mod => {
+    ['mPatientList', 'vPatientAdd', 'vPatientEdit'].map(mod => {
         var dir
         if (mod[0] === 'm') { dir = 'models' }
         if (mod[0] === 'v') { dir = 'views' }
 
+        // Load the module using require
         tt[mod] = require("../"+dir+"/"+mod)
     })
 

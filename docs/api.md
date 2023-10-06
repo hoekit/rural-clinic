@@ -1,4 +1,4 @@
-# API v0.0.2-1
+# API v0.0.2-2
 
 ## Contents<a id="toc"></a>
 [
@@ -61,6 +61,7 @@ Task: Adds/Creates a new patient
 
 ..
 __   Request:
+
     {
         patient: PatientObject
     }
@@ -129,6 +130,63 @@ Design the request and response:
 
     - Should have a component for authentication
     - Should have a component for data
+
+..
+
+__ GET /patient/:hn
+
+Task: Fetch all attributes of patient :hn
+
+..
+__   Request
+
+    NONE
+
+..
+__   Response
+
+    OK Response:
+    [
+        ok,
+        { patient: PatientObject }
+    ]
+
+    NOK Response
+    [
+        ok,
+        { id: patient.HN }
+        [ Errors ]
+    ]
+
+..
+
+__ POST /patient/:hn
+
+Task: Updates records of patient :hn
+
+..
+__   Request:
+
+    {
+        patient: PatientObject
+    }
+
+..
+__   Response:
+
+    OK Response:
+    [
+        ok,
+        { patient: PatientObject }
+    ]
+    # PatientObject has value for .hn
+
+    NOK Response
+    [
+        nok
+        { patient: PatientObject },
+        [ Errors ]
+    ]
 
 ..
 

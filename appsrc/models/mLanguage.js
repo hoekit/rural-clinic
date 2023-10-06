@@ -1,4 +1,4 @@
-// src/models/mLanguage v0.0.2-4
+// appsrc/models/mLanguage v0.0.2-5
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -31,7 +31,7 @@ mLang.s.en = key => {
         login       : 'Login',
         password    : 'Password',
         pleaseWait  : 'Please wait',
-        search      : 'Search',
+        search      : 'Search by name and hn',
         shortYear   : 'y',
         shortDay    : 'd',
         username    : 'Username',
@@ -84,7 +84,7 @@ mLang.s.th = key => {
         login       : 'เข้าสู่ระบบ',
         password    : 'รหัสผ่าน',
         pleaseWait  : 'โปรดรอสักครู่',
-        search      : 'ค้นหา',
+        search      : 'ค้นหาตามชื่อและHN',
         shortYear   : 'ป',
         shortDay    : 'ว',
         username    : 'ชื่อผู้ใช้',
