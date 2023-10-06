@@ -48,6 +48,7 @@
 44. Problem: Implement search
 45. VERSION 0.0.2
 46. Problem: Implement Patient Edit
+47. VERSION 0.0.3
 ]
 
 ## Details
@@ -1548,5 +1549,11 @@ __ Other Incidental Changes
 4. Update lib/HATX.pm
     - Add documentation and examples
 
+..
+
+----
+<a id="47"></a>
+## 47. VERSION 0.0.3
+__ Patient Edit works
 ..
 
