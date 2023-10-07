@@ -1,4 +1,4 @@
-// appsrc/models/mLanguage v0.0.2-5
+// appsrc/models/mLanguage v0.0.3-6
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -56,6 +56,19 @@ mLang.s.en = key => {
 
         submit      : 'Submit',
 
+        // Dialog messages
+        dlgDeleteRec: 'This record will be deleted!',
+        dlgDeleteRecSure: 'Are you sure?',
+        dlgCancel: 'Cancel',
+        dlgConfirm: 'Confirm',
+        dlgRetry: 'Retry',
+        dlgReqSent: 'Request sent.',
+        dlgWaitResp: 'Waiting for server response.',
+        dlgDeletePatientOk: 'Patient Delete Success!',
+        dlgDeletePatientNok: 'Patient Delete Failed!',
+        dlgTryAgain: 'Please try again.',
+        dlgOk: 'OK',
+
         // Error messages
         e2101       : 'First Name cannot be empty',
         e2102       : 'Last Name cannot be empty',
@@ -109,6 +122,21 @@ mLang.s.th = key => {
         contactPhoneNum : 'เบอร์โทรผู้ที่ติดต่อได้',
 
         submit      : 'บันทึก',
+
+        // Dialog messages
+        dlgDeleteRec: 'รายการนี้จะถูกลบ!',
+        dlgDeleteRecSure: 'คุณแน่ใจไหม',
+        dlgCancel: 'ยกเลิก',
+        dlgConfirm: 'ยืนยัน',
+        dlgRetry: 'ลองอีกครั้ง',
+        dlgReqSent: 'ส่งคำสั่งไปแล้ว',
+        dlgWaitResp: 'กำลังรอการตอบกลับจากเซิร์ฟเวอร์',
+        dlgDeletePatientOk: 'รายการนี้ถูกลบสำเร็จ',
+        dlgDeletePatientNok: 'รายการนี้ไม่ถูกลบ',
+        dlgTryAgain: 'กรุณาลองอีกครั้ง',
+        dlgOk: 'ตกลง',
+
+
 
         // Error messages
         e2101       : 'ชื่อ ต้องมีค่า',

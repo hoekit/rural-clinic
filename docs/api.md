@@ -1,4 +1,4 @@
-# API v0.0.2-2
+# API v0.0.3-3
 
 ## Contents<a id="toc"></a>
 [
@@ -185,6 +185,33 @@ __   Response:
     [
         nok
         { patient: PatientObject },
+        [ Errors ]
+    ]
+
+..
+
+__ DELETE /patient/:hn
+
+Task: Deletes the record of patient :hn
+
+..
+__   Request:
+
+    NONE
+
+..
+__   Response:
+
+    OK Response:
+    [
+        ok,
+        { hn: hn }
+    ]
+
+    NOK Response
+    [
+        nok
+        { hn: hn },
         [ Errors ]
     ]
 

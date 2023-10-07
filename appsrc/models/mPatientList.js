@@ -1,4 +1,4 @@
-// appsrc/models/mPatientList.js v0.0.2-3
+// appsrc/models/mPatientList.js v0.0.3-4
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -124,6 +124,37 @@ mPatientList.getFullRecord = id => {
         } else {
             // TODO: Case request succeeded but reqStatus is not ok
             const reqError = res[2]
+            return Promise.reject(reqError)
+
+        }
+    })
+    .catch(err => {
+        // TODO: Case request did not complete successfully
+        return Promise.reject(err)
+
+    })
+}
+mPatientList.deleteItem = id => {
+    // Return a promise that either:
+    //   resolves to { "hn" : hn }
+    //   rejects with an error [ ... ]
+    return m.request({
+        method: 'DELETE',
+        url   : '/patient/' + id
+    })
+    .then(res => {
+        // res is a simply a list: [ reqStatus, reqData, reqError ]
+        //   reqStatus - One of: ok|nok
+        //   reqData   - A JSON object containing response data
+        //   reqError  - A JSON array containing list of errors
+        const [ reqStatus, reqData, reqError ] = res
+
+        // If status is ok, return the resolved promise
+        if (reqStatus === 'ok') {
+            return Promise.resolve(reqData)
+
+        } else {
+            // TODO: Case request succeeded but reqStatus is NOT OK
             return Promise.reject(reqError)
 
         }

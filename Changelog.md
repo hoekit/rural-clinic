@@ -49,6 +49,7 @@
 45. VERSION 0.0.2
 46. Problem: Implement Patient Edit
 47. VERSION 0.0.3
+48. Problem: Implement Patient Delete
 ]
 
 ## Details
@@ -1555,5 +1556,167 @@ __ Other Incidental Changes
 <a id="47"></a>
 ## 47. VERSION 0.0.3
 __ Patient Edit works
+..
+
+----
+<a id="48"></a>
+## 48. Problem: Implement Patient Delete
+__ Concept
+
+Patient Delete refers to deleting a patient from the list of patients.
+When a the "x" button is clicked for a given patient, a confirmation
+dialog appears within that record:
+
+    Records for patient XXXX will be permanently deleted.
+
+            [ CANCEL ]      [ DELETE ]
+
+If [CANCEL] is selected, then goes back to normal. If [ DELETE ] is
+selected, then a delete is performed.
+
+Let's make the delete be in-situ:
+    - For record about to be deleted,
+    - make the border of the record red
+    - make the content of the record light-red
+    - Show the ConfirmDelete
+
+..
+__ Changes Needed
+
+1. Update appsrc/views/vPatientList.js
+
+2. Update appsrc/models/mPatientList.js
+
+3. Update Main.pl
+
+4. Update appsrc/models/mLanguage.js
+
+..
+__   1. Update appsrc/views/vPatientList.js
+..
+__     View-Data
+
+    Add vd.delete to store info about patient being deleted
+    - vd.delete.hn
+        - One of : -1 | HN being deleted
+    - vd.delete.state
+        - One of : INIT | STARTED | PENDING | DELETED | ERROR
+        - INIT   : when vd.delete.hn == -1
+        - STARTED: when user clicks (x) delete button for a record
+        - PENDING: when user confirms deletion and awaits server response
+        - DELETED: when record has been deleted on server
+        - ERROR  : when an error arose when deleting from server
+
+..
+__     View-Views
+
+    Update record view to look different if record is being deleted
+
+    vv.dlgConfirmDelete:
+        - Dialog asking user to confirm deletion.
+    - STARTED:
+        - Thick red border
+        - Light-red background
+        - Action buttons disabled
+        - Show ConfirmDelete dialog
+            - Records for patient XXXX will be permanently deleted.
+            -           [ CANCEL ]      [ CONFIRM ]
+
+    vv.dlgDeletePending:
+        - Dialog informing user to wait for server response.
+    - PENDING:
+        - Thick red border
+        - Light-gray background
+        - Action buttons disabled
+        - Show DeletePending message
+            - Request sent. Waiting for server response.
+
+    vv.dlgDeleteSuccess:
+        - Dialog informing user of deletion success.
+        - Asks user to acknowledge.
+    - DELETED:
+        - Thick gray border
+        - Light-gray background
+        - Action buttons disabled
+        - Show ItemDeleted message
+            - Record for "Firstname Lastname (HN)" has been deleted.
+            -    [ CLOSE ]
+            - On [ CLOSE ]
+                - Set vd.delete.hn    = null
+                - Set vd.delete.state = null
+
+    vv.dlgDeleteError:
+        - Dialog informing user of errors.
+        - Asks user to either cancel or retry.
+    - ERROR:
+        - Thick red border
+        - Light-red background
+        - Action buttons "enabled"
+        - Show DeleteError dialog
+            - Delete failed. Please retry.
+            -   [ CANCEL ]   [ RETRY ]
+
+    Container vv also contains other sub-views:
+        - vv.header: Sub-view for header
+        - vv.search: Sub-view for search bar
+        - vv.patient: Sub-view for patient item
+
+..
+__     View-Actions
+
+    - Add action va.delete()
+        - Triggered when user clicks on (x) delete button
+        - Updates vd.delete.hn
+            - Can only delete one record at a time
+            - Be sure that vd.delete.hn is not defined
+        - Updates vd.delete.state to STARTED
+
+    - Add action va.deleteConfirm()
+        - Trigger when user confirms that the records should be deleted
+        - Updates vd.delete.state to PENDING
+        - Calls mPatientList.deleteItem
+            - On Success: DELETED
+            - On Failure: ERROR
+
+..
+__   2. Update appsrc/models/mPatientList.js
+
+    Add mPatientList.deleteItem
+    - Deletes given item
+    - Send request by calling endpoint DELETE /patient/:hn
+
+..
+__   3. Update Main.pl
+
+    Add DELETE /patient/:hn
+    - Delete record from table patient
+    - Use the new helper response()
+
+..
+__   4. Update appsrc/models/mLanguage.js
+
+    Add strings for various messages in dialogs
+
+..
+__ Other incidental changes
+
+- Update appsrc/models/mDebug.js
+    - Add module vPatientList which was not added earlier
+
+- Update public/css/app.css
+    - Add CSS for spinner that indicates
+
+- Update docs/api.md
+    - Add documentation for DELETE /patient/:hn
+
+- Update docs/progguide.md
+    - Add documentation on images, API responses and others
+
+..
+__ TODO
+
+- Update Main.pl
+    - Update all endpoint handlers to use helper response()
+
 ..
 

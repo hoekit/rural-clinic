@@ -1,4 +1,4 @@
-# Main.pl v0.0.2-3
+# Main.pl v0.0.3-4
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -249,6 +249,31 @@ post '/patient/:hn' => sub {
 
 };
 
+del '/patient/:hn' => sub {
+    my $c = shift;
+    my $hn = $c->param('hn');
+
+    # Initialize response data
+    my $res = { hn => $hn };                    # Response container
+    my $errors = [];                            # Error container
+    my $sqlres;
+
+    # Delete the record
+    $sqlres = peek 0, run_sql( $dbpatient,
+        "DELETE FROM Patient WHERE hn = ?",
+        $hn);
+
+    # Check for errors
+    if ($sqlres->{status} eq 'nok') {
+        push @$errors, 'Server error. Please inform administrator';
+        goto EXIT;
+    }
+
+    # Send standard server response
+    EXIT:
+    return response($c, $res, $errors);
+};
+
 ######################################################################
 # Helpers
 ######################################################################
@@ -274,6 +299,25 @@ sub before_start {
         $c->res->headers->header('Server' => 'nginx/1.4.1');
         $c->res->headers->header('Access-Control-Allow-Origin' => '*');
     });
+}
+
+sub response {
+    # Standard server response for all API endpoints
+    # See: docs/progguide.md
+    my ($c, $res, $errors) = @_;
+
+    # EXIT_NOK: Send NOK response on error
+    return $c->render(json => [
+        'nok',
+        $res,
+        $errors,
+    ]) if $#$errors > -1;
+
+    # EXIT_OK: Send OK response
+    return $c->render(json => [
+        'ok',
+        $res,
+    ]);
 }
 
 before_start(app, $SP);
